@@ -761,7 +761,7 @@ public class HelloArActivity extends AppCompatActivity implements SampleRender.R
         viewMatrix);
     updateSphericalHarmonicsCoefficients(
         lightEstimate.getEnvironmentalHdrAmbientSphericalHarmonics());
-    cubemapFilter.update(lightEstimate.acquireEnvironmentalHdrCubeMap());
+//    cubemapFilter.update(lightEstimate.acquireEnvironmentalHdrCubeMap());
   }
 
   private void updateMainLight(float[] direction, float[] intensity, float[] viewMatrix) {

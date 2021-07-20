@@ -583,9 +583,9 @@ public class Shader implements Closeable {
     }
     int location = GLES30.glGetUniformLocation(programId, name);
     GLError.maybeThrowGLException("Failed to find uniform", "glGetUniformLocation");
-    if (location == -1) {
-      throw new IllegalArgumentException("Shader uniform does not exist: " + name);
-    }
+//    if (location == -1) {
+//      throw new IllegalArgumentException("Shader uniform does not exist: " + name);
+//    }
     uniformLocations.put(name, Integer.valueOf(location));
     uniformNames.put(Integer.valueOf(location), name);
     return location;
