@@ -173,7 +173,8 @@ vec3 Pbr_CalculateEnvironmentalRadiance(
   vec3 specularTerm =
       Pbr_CalculateSpecularEnvironmentalRadiance(shading, material, cubemap);
 
-  return diffuseTerm + specularTerm;
+    return diffuseTerm;
+//  return diffuseTerm + specularTerm;
 }
 
 void Pbr_CreateShadingParameters(const in vec3 viewNormal,
