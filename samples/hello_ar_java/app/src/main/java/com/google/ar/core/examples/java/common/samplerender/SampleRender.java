@@ -79,7 +79,7 @@ public class SampleRender {
    * <p>The {@code framebuffer} argument may be null, in which case the default framebuffer is used.
    */
   public void draw(Mesh mesh, Shader shader, Framebuffer framebuffer) {
-    useFramebuffer(framebuffer);
+     useFramebuffer(framebuffer);
     shader.lowLevelUse();
     mesh.lowLevelDraw();
   }
