@@ -1,12 +1,22 @@
 #version 300 es
-precision mediump float;
-
-/* inputs :  in */
+///* inputs :  in */
 in vec3 v_ViewPosition;
 in vec3 v_ViewNormal;
 in vec2 v_TexCoord;
 /* outputs:  out */
-layout(location = 0) out vec4 o_FragColor;
+layout(location = 0) out vec4 gl_FragColor;
+
+/* TODO for testing: */
+//varying vec3 v_ViewPosition;
+//varying vec3 v_ViewNormal;
+//varying vec2 v_TexCoord;
+
+
+
+
+precision mediump float;
+
+
 uniform vec3 u_LightIntensity;  // The intensity of the main directional light.
 uniform vec4 u_ViewLightDirection; // The direction of the main directional light in view space.
 
@@ -54,38 +64,38 @@ vec3 Pbr_CalculateDiffuseEnvironmentalRadiance(const vec3 normal,
                   coefficients[6] * (3.0 * normal.z * normal.z - 1.0) +
                   coefficients[7] * (normal.z * normal.x) +
                   coefficients[8] * (normal.x * normal.x - normal.y * normal.y);
-  return max(radiance, 0.0);
+//        return vec3(0.5, 0.0, 0.0);
+
+    return max(radiance, 0.0);
+    return radiance;
 }
 
-vec3 Pbr_CalculateEnvironmentalRadiance(
-    const ShadingParameters shading,
-    const vec3 sphericalHarmonicsCoefficients[9]) {
+vec3 Pbr_CalculateEnvironmentalRadiance( const ShadingParameters shading,
+                                         const vec3 sphericalHarmonicsCoefficients[9]) {
   // The lambertian diffuse BRDF term (1/pi) is baked into HelloArActivity.sphericalHarmonicsFactors.
   return Pbr_CalculateDiffuseEnvironmentalRadiance(shading.worldNormalDirection,
                                                    sphericalHarmonicsCoefficients);
 }
 
-void Pbr_CreateShadingParameters(const in vec3 viewNormal,
-                                 const in vec3 viewPosition,
-                                 const in vec4 viewLightDirection,
-                                 const in mat4 viewInverse,
-                                 out ShadingParameters shading) {
-  vec3 normalDirection = normalize(viewNormal);
-  vec3 viewDirection = -normalize(viewPosition);
-  vec3 lightDirection = normalize(viewLightDirection.xyz);
+ShadingParameters Pbr_CreateShadingParameters(const  vec3 viewNormal,
+                                 const  vec3 viewPosition,
+                                 const  vec4 viewLightDirection,
+                                 const  mat4 viewInverse //, out ShadingParameters shading
+) {
+    ShadingParameters shading;
+  vec3 normalDirection  = normalize(viewNormal);
+  vec3 viewDirection    = -normalize(viewPosition);
+  vec3 lightDirection   = normalize(viewLightDirection.xyz);
   vec3 halfwayDirection = normalize(viewDirection + lightDirection);
 
-  // Clamping the minimum bound yields better results with values less than or
-  // equal to 0, which would otherwise cause discontinuity in the geometry
-  // factor. Neubelt and Pettineo 2013, "Crafting a Next-gen Material Pipeline
-  // for The Order: 1886"
-  shading.normalDotView = max(dot(normalDirection, viewDirection), 1e-4);
-  shading.normalDotHalfway =
-      clamp(dot(normalDirection, halfwayDirection), 0.0, 1.0);
-  shading.normalDotLight =
-      clamp(dot(normalDirection, lightDirection), 0.0, 1.0);
-  shading.viewDotHalfway =
-      clamp(dot(viewDirection, halfwayDirection), 0.0, 1.0);
+//   Clamping the minimum bound yields better results with values less than or
+//   equal to 0, which would otherwise cause discontinuity in the geometry
+//   factor. Neubelt and Pettineo 2013, "Crafting a Next-gen Material Pipeline
+//   for The Order: 1886"
+  shading.normalDotView    = max(dot(normalDirection, viewDirection), 1e-4);
+  shading.normalDotHalfway = clamp(dot(normalDirection, halfwayDirection), 0.0, 1.0);
+  shading.normalDotLight   = clamp(dot(normalDirection, lightDirection), 0.0, 1.0);
+  shading.viewDotHalfway   = clamp(dot(viewDirection, halfwayDirection), 0.0, 1.0);
 
   // The following calculation can be proven as being equivalent to 1-(N.H)^2 by
   // using Lagrange's identity.
@@ -97,11 +107,12 @@ void Pbr_CreateShadingParameters(const in vec3 viewNormal,
   // We are calculating it in this way to preserve floating point precision.
   vec3 NxH = cross(normalDirection, halfwayDirection);
   shading.oneMinusNormalDotHalfwaySquared = dot(NxH, NxH);
-
-  shading.worldNormalDirection = (viewInverse * vec4(normalDirection, 0.0)).xyz;
+    shading.worldNormalDirection = (viewInverse * vec4(normalDirection, 0.0)).xyz;
+//    shading.worldNormalDirection = (vec4(normalDirection, 0.0)).xyz; // TODO: new for test
+//    shading.worldNormalDirection = (vec4(normalDirection, 0.0)).xyz; // TODO: new for test
   vec3 reflectDirection = reflect(-viewDirection, normalDirection);
-  shading.worldReflectDirection =
-      (viewInverse * vec4(reflectDirection, 0.0)).xyz;
+  shading.worldReflectDirection = (viewInverse * vec4(reflectDirection, 0.0)).xyz;
+    return shading;
 }
 
 vec3 LinearToSrgb(const vec3 color) {
@@ -114,10 +125,12 @@ void main() {
   vec2 texCoord = vec2(v_TexCoord.x, 1.0 - v_TexCoord.y);
 
   // Skip all lighting calculations if the estimation is not valid.
-  if (!u_LightEstimateIsValid) { o_FragColor = vec4(1.0, 1.0, 1.0, 1.0);  return; }
+//  if (!u_LightEstimateIsValid) { o_FragColor = vec4(1.0, 1.0, 1.0, 1.0);  return; }
 
-  ShadingParameters shading;
-  Pbr_CreateShadingParameters(v_ViewNormal, v_ViewPosition, u_ViewLightDirection, u_ViewInverse, shading);
+  ShadingParameters shading = Pbr_CreateShadingParameters(  v_ViewNormal,
+                                                            v_ViewPosition,
+                                                            u_ViewLightDirection,
+                                                            u_ViewInverse); // , shading);
 
   // Combine the radiance contributions of both the main light and environment
   vec3 mainLightRadiance =  Pbr_CalculateMainLightRadiance(shading, u_LightIntensity);
@@ -128,5 +141,6 @@ void main() {
     vec3 radiance = environmentalRadiance;    /* (3) only SH Light*/
 
   // Convert final color to sRGB color space
-  o_FragColor = vec4(LinearToSrgb(radiance), 1.0);
+    gl_FragColor = vec4(LinearToSrgb(radiance), 1.0);
+//    gl_FragColor = vec4(radiance, 1.0);
 }

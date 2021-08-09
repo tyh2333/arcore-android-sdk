@@ -108,9 +108,71 @@ public class HelloArActivity extends AppCompatActivity implements SampleRender.R
     0.136569f,
   };
 
+  private final float[] testLd = new float[]{0.0f, 1.0f, 0.0f};
+
+    private final float[] testLi = new float[]{0.0f, 0.0f, 0.0f};
+//private final float[] testLi = new float[]{0.5f, 0.5f, 0.5f};
+//private final float[] testLi = new float[]{0.1f, 0.1f, 0.1f};
+//  private final float[] testLi = new float[]{1.0f, 1.0f, 1.0f};
+  // todo: new hardcode SH parameter:
+  private final float[] testSHCoeff = new float[] // blue green
+          {0.00f,   0.0000f,   0.00f,
+//                  {0.4f, 0.4f, -0.5f,
+                  ///(2) if positive bottom is brighter and if negative top is brighter
+                  //                  0.8f, 0.8f, 0.8f,
+//                  0.0f, 0.0f, 0.0f,
+//                  0.8f, 0.8f, 0.8f,
+                  -0.4f, -0.4f, -0.4f,
+                  ///(3) if positive front is brighter and if negative back is brighter
+//                  0.8f, 0.8f, 0.8f,
+//                  -0.8f, -0.8f, -0.8f,
+//                  -0.4f, -0.4f, -0.4f,
+                  0.0f, 0.0f, 0.0f,
+//
+
+//                  0.8f, 0.8f, 0.8f,
+//                                    -0.8f, -0.8f, -0.8f,
+
+//                  0.0f, 0.0f, 0.0f,
+                          0.0f, 0.0f, 0.0f,
+
+//                  0.2f, 0.2f, 0.2f,
+                  0,0,0,
+                  0,0,0,
+
+                  0,0,0, 0,0,0, 0,0,0};
+
+//    private final float[] testSHCoeff = new float[] // blue green: cone and bot of ball is blue, others green
+//          {0.4f,   0.00000f,   0.00f,
+//                  0.0f, -0.4f, 0.4f,
+//                  0.0f, 0.0f, 0.0f,
+//                  0.0f, 0.0f, 0.0f,
+//                  0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0};
+
+//  private final float[] testSHCoeff = new float[] // blue green: cone and bot of ball is blue, others green
+//          {0.0f,   0.00000f,   0.00f,
+//                  -0.4f, -0.4f, 0.4f, // reverse the blue and green
+//                  0.0f, 0.0f, 0.0f,
+//                  0.0f, 0.0f, 0.0f,
+//                  0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0};
+//  private final float[] testSHCoeff = new float[]
+//          {0.2f,   0.00000f,   0.00f,
+//                  0.0f, 0.4f, 0.0f, 0.0f, 0.4f,0.0f, 0.0f, 0.0f, 0.4f,
+//                  0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0};
+//  private final float[] testSHCoeff = new float[]
+//                {0.7953949f,  0.4405923f,  0.5459412f,
+//                0.3981450f,  0.3526911f,  0.6097158f,
+//                -0.3424573f, -0.1838151f, -0.2715583f,
+//                -0.2944621f, -0.0560606f,  0.0095193f,
+//                -0.1123051f, -0.0513088f, -0.1232869f,
+//                -0.2645007f, -0.2257996f, -0.4785847f,
+//                -0.1569444f, -0.0954703f, -0.1485053f,
+//                0.5646247f,  0.2161586f,  0.1402643f,
+//                0.2137442f, -0.0547578f, -0.3061700f};
   private static final float Z_NEAR = 0.1f;
   private static final float Z_FAR = 100f;
-
+    private int cnt = 0;
+    private double alpha = 0.0;
 //  private static final int CUBEMAP_RESOLUTION = 16;
 //  private static final int CUBEMAP_NUMBER_OF_IMPORTANCE_SAMPLES = 32;
 
@@ -379,19 +441,19 @@ public class HelloArActivity extends AppCompatActivity implements SampleRender.R
 //      GLError.maybeThrowGLException("Failed to populate DFG texture", "glTexImage2D");
 
       // Point cloud
-      pointCloudShader =
-          Shader.createFromAssets(
-                  render, "shaders/point_cloud.vert", "shaders/point_cloud.frag", /*defines=*/ null)
-              .setVec4(
-                  "u_Color", new float[] {31.0f / 255.0f, 188.0f / 255.0f, 210.0f / 255.0f, 1.0f})
-              .setFloat("u_PointSize", 5.0f);
-      // four entries per vertex: X, Y, Z, confidence
-      pointCloudVertexBuffer =
-          new VertexBuffer(render, /*numberOfEntriesPerVertex=*/ 4, /*entries=*/ null);
-      final VertexBuffer[] pointCloudVertexBuffers = {pointCloudVertexBuffer};
-      pointCloudMesh =
-          new Mesh(
-              render, Mesh.PrimitiveMode.POINTS, /*indexBuffer=*/ null, pointCloudVertexBuffers);
+//      pointCloudShader =
+//          Shader.createFromAssets(
+//                  render, "shaders/point_cloud.vert", "shaders/point_cloud.frag", /*defines=*/ null)
+//              .setVec4(
+//                  "u_Color", new float[] {31.0f / 255.0f, 188.0f / 255.0f, 210.0f / 255.0f, 1.0f})
+//              .setFloat("u_PointSize", 5.0f);
+//      // four entries per vertex: X, Y, Z, confidence
+//      pointCloudVertexBuffer =
+//          new VertexBuffer(render, /*numberOfEntriesPerVertex=*/ 4, /*entries=*/ null);
+//      final VertexBuffer[] pointCloudVertexBuffers = {pointCloudVertexBuffer};
+//      pointCloudMesh =
+//          new Mesh(
+//              render, Mesh.PrimitiveMode.POINTS, /*indexBuffer=*/ null, pointCloudVertexBuffers);
 
       // Virtual object to render (ARCore pawn)
 //      Texture virtualObjectAlbedoTexture =
@@ -443,6 +505,12 @@ public class HelloArActivity extends AppCompatActivity implements SampleRender.R
       return;
     }
 
+    if(cnt % 60 == 0){
+      alpha += Math.PI * 0.01f;
+      worldLightDirection[0] = (float) Math.cos(alpha);
+      worldLightDirection[0] = 1.0f;
+      worldLightDirection[2] = (float) Math.sin(alpha);
+    }
     // Texture names should only be set once on a GL thread unless they change. This is done during
     // onDrawFrame rather than onSurfaceCreated since the session is not guaranteed to have been
     // initialized during the execution of onSurfaceCreated.
@@ -547,15 +615,15 @@ public class HelloArActivity extends AppCompatActivity implements SampleRender.R
 
     // Visualize tracked points.
     // Use try-with-resources to automatically release the point cloud.
-    try (PointCloud pointCloud = frame.acquirePointCloud()) {
-      if (pointCloud.getTimestamp() > lastPointCloudTimestamp) {
-        pointCloudVertexBuffer.set(pointCloud.getPoints());
-        lastPointCloudTimestamp = pointCloud.getTimestamp();
-      }
-      Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
-      pointCloudShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix);
-      render.draw(pointCloudMesh, pointCloudShader);
-    }
+//    try (PointCloud pointCloud = frame.acquirePointCloud()) {
+//      if (pointCloud.getTimestamp() > lastPointCloudTimestamp) {
+//        pointCloudVertexBuffer.set(pointCloud.getPoints());
+//        lastPointCloudTimestamp = pointCloud.getTimestamp();
+//      }
+//      Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+//      pointCloudShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix);
+//      render.draw(pointCloudMesh, pointCloudShader);
+//    }
 
     // Visualize planes.
     planeRenderer.drawPlanes(
@@ -756,23 +824,49 @@ public class HelloArActivity extends AppCompatActivity implements SampleRender.R
 
     Matrix.invertM(viewInverseMatrix, 0, viewMatrix, 0);
     virtualObjectShader.setMat4("u_ViewInverse", viewInverseMatrix);
+//    virtualObjectShader.setMat4("u_ViewInverse", viewMatrix );
 
+//    if(cnt % 60 == 0){
+          alpha += Math.PI * 0.005f;
+          testLd[0] = (float) Math.cos(alpha);
+          testLd[0] = 1;
+          testLd[2] = (float) Math.sin(alpha);
+//    }
     updateMainLight(
-        lightEstimate.getEnvironmentalHdrMainLightDirection(),
-        lightEstimate.getEnvironmentalHdrMainLightIntensity(),
+//        lightEstimate.getEnvironmentalHdrMainLightDirection(),
+//        lightEstimate.getEnvironmentalHdrMainLightIntensity(),
+            testLd,
+            testLi,
         viewMatrix);
-    updateSphericalHarmonicsCoefficients(
-        lightEstimate.getEnvironmentalHdrAmbientSphericalHarmonics());
+
+      for(int i = 3; i <= 5; i++){
+        testSHCoeff[3] += 0.002;
+        testSHCoeff[4] += 0.003;
+        testSHCoeff[5] += 0.004;
+        if(testSHCoeff[3] > 0.9) testSHCoeff[i] = -0.1f;
+        if(testSHCoeff[4] > 0.9) testSHCoeff[i] = -0.2f;
+        if(testSHCoeff[5] > 0.9) testSHCoeff[i] = -0.3f;
+      }
+    updateSphericalHarmonicsCoefficients(testSHCoeff);
+//        lightEstimate.getEnvironmentalHdrAmbientSphericalHarmonics());
 //    cubemapFilter.update(lightEstimate.acquireEnvironmentalHdrCubeMap());
   }
 
   private void updateMainLight(float[] direction, float[] intensity, float[] viewMatrix) {
     // We need the direction in a vec4 with 0.0 as the final component to transform it to view space
-    worldLightDirection[0] = direction[0];
-    worldLightDirection[1] = direction[1];
-    worldLightDirection[2] = direction[2];
+//    worldLightDirection[0] = direction[0];
+//    worldLightDirection[1] = direction[1];
+//    worldLightDirection[2] = direction[2];
+//    if(cnt % 60 == 0){
+//      alpha += Math.PI * 0.01f;
+//      worldLightDirection[0] = (float) Math.cos(alpha);
+//      worldLightDirection[0] = 1;
+//      worldLightDirection[2] = (float) Math.sin(alpha);
+//    }
+    float [] directionTov4 = new float[]{direction[0],direction[1],direction[2], 1.0f};
     Matrix.multiplyMV(viewLightDirection, 0, viewMatrix, 0, worldLightDirection, 0);
-    virtualObjectShader.setVec4("u_ViewLightDirection", viewLightDirection);
+//    virtualObjectShader.setVec4("u_ViewLightDirection", viewLightDirection);
+    virtualObjectShader.setVec4("u_ViewLightDirection", directionTov4);
     virtualObjectShader.setVec3("u_LightIntensity", intensity);
   }
 

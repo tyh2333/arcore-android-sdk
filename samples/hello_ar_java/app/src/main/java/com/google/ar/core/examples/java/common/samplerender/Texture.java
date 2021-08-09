@@ -123,9 +123,10 @@ public class Texture implements Closeable {
   }
 
   /** Create a texture from the given asset file name. */
-  public static Texture createFromAsset(
-      SampleRender render, String assetFileName, WrapMode wrapMode, ColorFormat colorFormat)
-      throws IOException {
+  public static Texture createFromAsset( SampleRender render,
+                                         String assetFileName,
+                                         WrapMode wrapMode,
+                                         ColorFormat colorFormat) throws IOException {
     Texture texture = new Texture(render, Target.TEXTURE_2D, wrapMode);
     Bitmap bitmap = null;
     try {
